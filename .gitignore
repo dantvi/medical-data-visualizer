@@ -1,0 +1,50 @@
+# Byte-compiled / cache / temp files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+.env/
+.venv/
+env/
+venv/
+ENV/
+
+# Jupyter runtime files
+*.nbconvert.ipynb
+*.nbconvert/
+*.nb.html
+*.nb.json
+*.nb.js
+
+# OS-specifika
+.DS_Store
+Thumbs.db
+
+# VS Code settings
+.vscode/
+
+# Data files (if they are too large or shouldn't be tracked)
+*.tsv
+*.xls
+*.xlsx
+
+# Logs and temp
+*.log
+*.tmp
+
+# Environment/Package management
+Pipfile.lock
+poetry.lock
+*.egg-info/
+.eggs/
+*.bak
+
+# Jupyter extensions (optional)
+.jupyter/lab/workspaces/
+
+# Gitpod settings (optional, if not needed in local dev)
+.gitpod.yml
