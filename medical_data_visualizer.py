@@ -12,8 +12,9 @@ _height_m = df["height"] / 100
 _bmi = df["weight"] / (_height_m ** 2)
 df["overweight"] = (_bmi > 25).astype(int)
 
-# 3
-
+# 3 Normalize markers so 0=good, 1=bad (1->0, >1->1)
+for _col in ["cholesterol", "gluc"]:
+    df[_col] = (df[_col] > 1).astype(int)
 
 # 4
 def draw_cat_plot():
