@@ -6,8 +6,11 @@ import numpy as np
 # 1
 df = pd.read_csv("medical_examination.csv")
 
-# 2
-df['overweight'] = None
+# 2 Add a binary overweight indicator based on BMI (>25 considered overweight)
+#   BMI uses metric units: kg / (m^2); height is provided in centimeters in the dataset.
+_height_m = df["height"] / 100
+_bmi = df["weight"] / (_height_m ** 2)
+df["overweight"] = (_bmi > 25).astype(int)
 
 # 3
 
