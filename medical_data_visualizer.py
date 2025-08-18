@@ -60,22 +60,41 @@ def draw_cat_plot():
     fig.savefig("catplot.png")
     return fig
 
-# 10
+# 10 Draw the Heat Map
 def draw_heat_map():
-    # 11
-    df_heat = None
+    # 11 Clean data: keep valid BP and remove height/weight outliers (2.5%–97.5%)
+    df_heat = df[df["ap_lo"] <= df["ap_hi"]].copy()
 
-    # 12
-    corr = None
+    h_low, h_high = df_heat["height"].quantile([0.025, 0.975])
+    w_low, w_high = df_heat["weight"].quantile([0.025, 0.975])
 
-    # 13
-    mask = None
+    df_heat = df_heat[
+        (df_heat["height"] >= h_low)
+        & (df_heat["height"] <= h_high)
+        & (df_heat["weight"] >= w_low)
+        & (df_heat["weight"] <= w_high)
+    ].copy()
 
-    # 14
-    fig, ax = None
+    # 12 Correlation matrix (numeric columns)
+    corr = df_heat.corr(numeric_only=True)
 
-    # 15
+    # 13 Mask for upper triangle
+    mask = np.triu(np.ones_like(corr, dtype=bool))
 
-    # 16
-    fig.savefig('heatmap.png')
+    # 14 Figure/axes
+    fig, ax = plt.subplots(figsize=(12, 10))
+
+    # 15 Draw annotated heatmap
+    sns.heatmap(
+        corr,
+        mask=mask,
+        annot=True,
+        fmt=".1f",
+        square=True,
+        cbar_kws={"shrink": 0.5},
+        ax=ax,
+    )
+
+    # 16 Save and return
+    fig.savefig("heatmap.png")
     return fig

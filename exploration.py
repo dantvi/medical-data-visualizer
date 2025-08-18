@@ -11,7 +11,7 @@
 # - Create categorical plots to compare risk factors
 # - Generate a heatmap to show correlations between measurements
 
-# In[10]:
+# In[13]:
 
 
 import medical_data_visualizer as mdv
@@ -20,14 +20,14 @@ mdv.df.head()
 
 # ## Overweight indicator
 
-# In[11]:
+# In[14]:
 
 
 # Sanity check: overweight column should exist and contain only 0/1
 mdv.df["overweight"].value_counts(dropna=False)
 
 
-# In[12]:
+# In[15]:
 
 
 # Spot-check BMI calculations vs overweight flag
@@ -39,7 +39,7 @@ tmp = mdv.df.assign(
 tmp.head(10)
 
 
-# In[13]:
+# In[16]:
 
 
 # Quick statistical summary of BMI and overweight
@@ -50,21 +50,21 @@ mdv.df.assign(
 
 # ## Normalize cholesterol and gluc
 
-# In[14]:
+# In[17]:
 
 
 # Quick schema + dtype checks
 mdv.df[["cholesterol","gluc","overweight"]].dtypes
 
 
-# In[15]:
+# In[18]:
 
 
 # Domain checks (0/1 only)
 mdv.df[["cholesterol","gluc"]].agg(["min","max","nunique"])
 
 
-# In[16]:
+# In[19]:
 
 
 # Distribution sanity
@@ -72,7 +72,7 @@ mdv.df["cholesterol"].value_counts(normalize=True).sort_index(), \
 mdv.df["gluc"].value_counts(normalize=True).sort_index()
 
 
-# In[17]:
+# In[20]:
 
 
 # Spot-check mapping against raw values
@@ -87,16 +87,19 @@ check.assign(
 
 # ## Categorical Plot
 
-# In[20]:
+# In[21]:
 
 
 # Call draw_cat_plot and show the figure
 from IPython.display import display
+import matplotlib.pyplot as plt
+
 fig = mdv.draw_cat_plot()
 display(fig)
+plt.close(fig)
 
 
-# In[ ]:
+# In[22]:
 
 
 # Inspect axes labels
@@ -111,8 +114,65 @@ import matplotlib as mpl
 len([rect for rect in ax.get_children() if isinstance(rect, mpl.patches.Rectangle)])
 
 
-# In[ ]:
+# ## Heat Map
+
+# In[23]:
 
 
+import pandas as pd, numpy as np, importlib, medical_data_visualizer as mdv
+mdv = importlib.reload(mdv)
 
+# Recompute cleaning inline for inspection (mirrors mdv.draw_heat_map)
+df_heat = mdv.df[mdv.df["ap_lo"] <= mdv.df["ap_hi"]].copy()
+h_low, h_high = df_heat["height"].quantile([0.025, 0.975])
+w_low, w_high = df_heat["weight"].quantile([0.025, 0.975])
+df_heat = df_heat[
+    df_heat["height"].between(h_low, h_high) & df_heat["weight"].between(w_low, w_high)
+].copy()
+
+df_shape_before = mdv.df.shape
+df_shape_after  = df_heat.shape
+bad_bp          = (~(df_heat["ap_lo"] <= df_heat["ap_hi"])).sum()
+(df_shape_before, df_shape_after, bad_bp, (h_low, h_high), (w_low, w_high))
+
+
+# In[24]:
+
+
+# Corr & mask
+corr = df_heat.corr(numeric_only=True)
+mask = np.triu(np.ones_like(corr, dtype=bool))
+corr.shape, mask.shape, mask.dtype, int(mask.sum())
+
+
+# In[25]:
+
+
+# Render once
+from IPython.display import display
+import matplotlib.pyplot as plt
+
+fig = mdv.draw_heat_map()
+display(fig)
+plt.close(fig)
+
+
+# In[26]:
+
+
+# Label & annotation sanity
+ax = fig.axes[0]
+xticks = [t.get_text() for t in ax.get_xticklabels()]
+yticks = [t.get_text() for t in ax.get_yticklabels()]
+has_text = any(hasattr(artist, "get_text") and artist.get_text() for artist in ax.get_children())
+
+xticks, yticks[:5], has_text
+
+
+# In[27]:
+
+
+# Check label matching FCC’s expected order
+expected_labels = ['id','age','sex','height','weight','ap_hi','ap_lo','cholesterol','gluc','smoke','alco','active','cardio','overweight']
+xticks == expected_labels
 
