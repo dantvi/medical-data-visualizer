@@ -3,6 +3,7 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 # 1
 df = pd.read_csv("medical_examination.csv")
 
@@ -16,23 +17,48 @@ df["overweight"] = (_bmi > 25).astype(int)
 for _col in ["cholesterol", "gluc"]:
     df[_col] = (df[_col] > 1).astype(int)
 
-# 4
+# 4 Draw the Categorical Plot
 def draw_cat_plot():
-    # 5
-    df_cat = None
+    # 5 Create long-form dataframe for selected categorical variables
+    cat_features = ["cholesterol", "gluc", "smoke", "alco", "active", "overweight"]
+    df_cat = pd.melt(
+        df,
+        id_vars=["cardio"],
+        value_vars=cat_features,
+        var_name="variable",
+        value_name="value",
+    )
 
-    # 6
-    df_cat = None
+    # 6 Group and reformat to counts per cardio/variable/value
+    df_cat = (
+        df_cat.groupby(["cardio", "variable", "value"])
+        .size()
+        .reset_index(name="total")
+    )
     
-    # 7
+    # 7 Enforce deterministic variable order to match unit tests
+    variable_order = ["active", "alco", "cholesterol", "gluc", "overweight", "smoke"]
+    df_cat["variable"] = pd.Categorical(
+        df_cat["variable"], categories=variable_order, ordered=True
+    )
 
-    # 8
-    fig = None
+    # Create the categorical bar plot faceted by cardio
+    g = sns.catplot(
+        data=df_cat,
+        x="variable",
+        y="total",
+        hue="value",
+        col="cardio",
+        kind="bar"
+    )
+    g.set_axis_labels("variable", "total")
 
-    # 9
-    fig.savefig('catplot.png')
+    # 8 Grab the figure handle
+    fig = g.fig
+
+    # 9 Persist plot and return figure
+    fig.savefig("catplot.png")
     return fig
-
 
 # 10
 def draw_heat_map():
