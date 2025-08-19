@@ -11,7 +11,7 @@
 # - Create categorical plots to compare risk factors
 # - Generate a heatmap to show correlations between measurements
 
-# In[13]:
+# In[1]:
 
 
 import medical_data_visualizer as mdv
@@ -20,14 +20,14 @@ mdv.df.head()
 
 # ## Overweight indicator
 
-# In[14]:
+# In[2]:
 
 
 # Sanity check: overweight column should exist and contain only 0/1
 mdv.df["overweight"].value_counts(dropna=False)
 
 
-# In[15]:
+# In[3]:
 
 
 # Spot-check BMI calculations vs overweight flag
@@ -39,7 +39,7 @@ tmp = mdv.df.assign(
 tmp.head(10)
 
 
-# In[16]:
+# In[4]:
 
 
 # Quick statistical summary of BMI and overweight
@@ -50,21 +50,21 @@ mdv.df.assign(
 
 # ## Normalize cholesterol and gluc
 
-# In[17]:
+# In[5]:
 
 
 # Quick schema + dtype checks
 mdv.df[["cholesterol","gluc","overweight"]].dtypes
 
 
-# In[18]:
+# In[6]:
 
 
 # Domain checks (0/1 only)
 mdv.df[["cholesterol","gluc"]].agg(["min","max","nunique"])
 
 
-# In[19]:
+# In[7]:
 
 
 # Distribution sanity
@@ -72,7 +72,7 @@ mdv.df["cholesterol"].value_counts(normalize=True).sort_index(), \
 mdv.df["gluc"].value_counts(normalize=True).sort_index()
 
 
-# In[20]:
+# In[8]:
 
 
 # Spot-check mapping against raw values
@@ -87,7 +87,7 @@ check.assign(
 
 # ## Categorical Plot
 
-# In[21]:
+# In[9]:
 
 
 # Call draw_cat_plot and show the figure
@@ -99,7 +99,7 @@ display(fig)
 plt.close(fig)
 
 
-# In[22]:
+# In[10]:
 
 
 # Inspect axes labels
@@ -116,7 +116,7 @@ len([rect for rect in ax.get_children() if isinstance(rect, mpl.patches.Rectangl
 
 # ## Heat Map
 
-# In[23]:
+# In[11]:
 
 
 import pandas as pd, numpy as np, importlib, medical_data_visualizer as mdv
@@ -136,7 +136,7 @@ bad_bp          = (~(df_heat["ap_lo"] <= df_heat["ap_hi"])).sum()
 (df_shape_before, df_shape_after, bad_bp, (h_low, h_high), (w_low, w_high))
 
 
-# In[24]:
+# In[12]:
 
 
 # Corr & mask
@@ -145,7 +145,7 @@ mask = np.triu(np.ones_like(corr, dtype=bool))
 corr.shape, mask.shape, mask.dtype, int(mask.sum())
 
 
-# In[25]:
+# In[13]:
 
 
 # Render once
@@ -157,7 +157,7 @@ display(fig)
 plt.close(fig)
 
 
-# In[26]:
+# In[14]:
 
 
 # Label & annotation sanity
@@ -169,7 +169,7 @@ has_text = any(hasattr(artist, "get_text") and artist.get_text() for artist in a
 xticks, yticks[:5], has_text
 
 
-# In[27]:
+# In[15]:
 
 
 # Check label matching FCC’s expected order
